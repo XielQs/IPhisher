@@ -1,0 +1,31 @@
+{
+  "name": "iphisher",
+  "version": "1.0.0",
+  "description": "IPhisher is a tool for phishing using images.",
+  "main": "index.js",
+  "scripts": {
+    "start": "node ."
+  },
+  "keywords": [
+    "phishing",
+    "images",
+    "iphisher",
+    "image phisher",
+    "xielq"
+  ],
+  "author": "XielQ",
+  "license": "MIT",
+  "dependencies": {
+    "axios": "^1.5.1",
+    "chalk": "^4.1.2",
+    "cli-progress": "^3.12.0",
+    "express": "^4.18.2",
+    "prompts": "^2.4.2",
+    "ua-parser-js": "^1.0.36",
+    "yargs": "^17.7.2"
+  },
+  "devDependencies": {
+    "@types/ua-parser-js": "^0.7.38",
+    "@types/yargs": "^17.0.31"
+  }
+}
