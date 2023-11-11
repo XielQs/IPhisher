@@ -8,28 +8,27 @@ function system(command) {
 
 const isWindows = process.platform === 'win32'
 const isMac = process.platform === 'darwin'
-const isLinux = process.platform === 'linux'
-const isTermux = (isLinux && fs.existsSync('/data/data/com.termux')) || process.env.TERMUX_VERSION || process.platform === 'android'
+const isTermux = fs.existsSync('/data/data/com.termux') || process.env.TERMUX_VERSION || process.platform === 'android'
+const isLinux = process.platform === 'linux' || isTermux
 
-const haveWget = spawnSync('wget', ['-V']).status === 0
-const haveCurl = spawnSync('curl', ['--version']).status === 0
-const haveSSH  = spawnSync('ssh', ['-V']).status === 0
-
-if (!(haveWget || haveCurl)) {
-  console.log('Please install wget or curl')
-  process.exit(1)
+function is_installed(command) {
+  return spawnSync(isWindows ? 'where' : 'which', [command]).status === 0
 }
 
 const baseDownloadURL = 'https://raw.githubusercontent.com/gamerboytr/IPhisher/master'
 
 if (!fs.existsSync(path.resolve(__dirname, 'package.json'))) { // Direct run
   console.log('Preparing for direct run...')
-  system(`${haveWget ? 'wget -q' : 'curl -O'} ${baseDownloadURL}/package.json`)
+  if (!(is_installed('wget') || !is_installed('curl'))) {
+    console.log('Please install wget or curl manually')
+    process.exit(1)
+  }
+  system(`${is_installed('wget') ? 'wget -q' : 'curl -O'} ${baseDownloadURL}/package.json`)
 }
 
 if (!fs.existsSync(path.resolve(__dirname, 'node_modules'))) {
   system(isWindows ? 'cls' : 'clear')
-  console.log('Installing dependencies...');
+  console.log('Installing dependencies...')
   let pm = 'npm'
   try {
     execSync('yarn --version', { stdio: 'ignore' })
@@ -50,7 +49,7 @@ if (!fs.existsSync(path.resolve(__dirname, 'node_modules'))) {
   console.log("Installed all dependencies.")
 }
 
-if (!haveSSH) {
+if (!is_installed('ssh')) {
   if (isWindows) {
     console.log('Please install OpenSSH manually')
     process.exit(1)
@@ -88,12 +87,10 @@ const args = yargs
   .version(VERSION_complete)
   .option('p', {
     alias: 'port',
-    default: 3000,
     describe: 'Port to run on',
     type: 'number',
   })
   .option('path', {
-    default: '/image.png',
     describe: 'Fake image path on server',
     type: 'string',
   })
@@ -444,4 +441,42 @@ async function main(defined = false, dPort = 3000, dPath = '/image.png') {
   await createTunnels(port, fakePath)
 }
 
-main()
+async function checkUpdates() {
+  const version = await axios.get(`${baseDownloadURL}/package.json`).then(r => r.data.version)
+  if (!version) return console.log(symbol.warning('Cannot check for updates'))
+  if (version !== VERSION_complete) {
+    let changelog = await axios.get(`${baseDownloadURL}/CHANGELOG.md`).then(r => r.data).catch(() => null)
+    if (changelog) changelog = changelog.split('\n').slice(1, changelog.split('\n').findIndex(a => a === '')).join('\n').trim()
+    console.log(symbol.info(`New version available: ${version}`))
+    if (changelog) console.log(symbol.info(`Changelog:\n${changelog}`))
+    const { update } = await prompts({
+      type: 'confirm',
+      name: 'update',
+      message: chalk.cyan('Do you want to update now?'),
+      initial: true,
+    })
+    if (!update) {
+      console.log(symbol.info('Using old version'))
+      return
+    }
+    system(isWindows ? 'cls' : 'clear')
+    console.log(logo)
+    console.log(symbol.info('Updating...'))
+    console.log(symbol.info('Downloading repo...'))
+    try {
+      system(`cd .. && ${isWindows ? `rmdir ${process.cwd()} /S /Q` : `rm -rf ${process.cwd()}`} && git clone https://github.com/gamerboytr/IPhisher.git ${process.cwd()}`)
+      console.log(symbol.info('Updated!'))
+      console.log(symbol.info('Restarting...'))
+      system(`cd ${process.cwd()} && npm start`)
+      process.exit(0)
+    } catch (e) {
+      console.log(symbol.error(e))
+      console.log(symbol.error('Cannot update'))
+    }
+  }
+}
+
+;(async function() {
+  await checkUpdates()
+  main()
+})()

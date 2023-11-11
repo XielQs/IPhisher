@@ -6,6 +6,7 @@
   <img src="https://img.shields.io/github/forks/gamerboytr/IPhisher?color=cyan&style=for-the-badge&color=purple">
   <img src="https://img.shields.io/github/issues/gamerboytr/IPhisher?color=red&style=for-the-badge">
   <img src="https://img.shields.io/github/license/gamerboytr/IPhisher?style=for-the-badge&color=blue">
+  <img src="https://hits.dwyl.com/gamerboytr/IPhisher.svg" width="140" height="28">
 <br>
 <br>
   <img src="https://img.shields.io/badge/Author-XielQ-purple?style=flat-square">
@@ -92,8 +93,8 @@ Usage: node index.js [-h] [-p PORT] [--path PATH]
 
 Options:
       --version  Show version number  [boolean]
-  -p, --port     Port to run on  [number] [default: 3000]
-      --path     Fake image path on server  [string] [default: "/image.png"]
+  -p, --port     Port to run on  [number]
+      --path     Fake image path on server  [string]
   -h, --help     Show help  [boolean]
 ```
 
@@ -135,6 +136,7 @@ Windows    | Excellent
 - `WSL`
 - `Ubuntu`
 - `Kali-Linux`
+- `Termux`
 
 ### [•] Disclaimer
 

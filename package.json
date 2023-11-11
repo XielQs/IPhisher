@@ -1,6 +1,6 @@
 {
   "name": "iphisher",
-  "version": "1.0.0",
+  "version": "1.1.0",
   "description": "IPhisher is a tool for phishing using images.",
   "main": "index.js",
   "scripts": {
