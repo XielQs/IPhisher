@@ -316,7 +316,7 @@ async function downloadCloudflared(forceDownload = false) {
     console.log(symbol.info('Downloading cloudflared...'))
     try {
       await downloadFile(downloadPath, path.resolve(__dirname, 'bin', 'cloudflared' + (isWindows ? '.exe' : isMac ? '.tgz' : '')))
-      if (isLinux) await exec(`chmod +x ${path.resolve(__dirname, 'bin', 'cloudflared')}`)
+      if (isLinux || isTermux) await exec(`chmod +x ${path.resolve(__dirname, 'bin', 'cloudflared')}`)
     } catch (e) {
       console.log(symbol.error(e))
       console.log(symbol.error('Cannot download cloudflared'))
