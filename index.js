@@ -15,6 +15,8 @@ function is_installed(command) {
   return spawnSync(isWindows ? 'where' : 'which', [command]).status === 0
 }
 
+const defaultPM = is_installed('pnpm') ? 'pnpm' : is_installed('yarn') ? 'yarn' : 'npm'
+
 const baseDownloadURL = 'https://raw.githubusercontent.com/gamerboytr/IPhisher/master'
 
 if (!fs.existsSync(path.resolve(__dirname, 'package.json'))) { // Direct run
@@ -29,21 +31,24 @@ if (!fs.existsSync(path.resolve(__dirname, 'package.json'))) { // Direct run
 if (!fs.existsSync(path.resolve(__dirname, 'node_modules'))) {
   system(isWindows ? 'cls' : 'clear')
   console.log('Installing dependencies...')
-  let pm = 'npm'
-  try {
-    execSync('yarn --version', { stdio: 'ignore' })
-    pm = 'yarn'
-  } catch {}
-  try {
-    execSync(`pnpm --version`, { stdio: 'ignore' })
-    pm = 'pnpm'
-  } catch {}
-  try { system(`${pm} install`) }
+  let pm = defaultPM
+  try { system(`${defaultPM} install`) }
   catch (e) {
     console.log(e)
-    console.log(`Failed to install dependencies with ${pm}, please install manually`)
-    fs.unlinkSync(path.resolve(__dirname, 'node_modules'))
-    process.exit(1)
+    console.log(`Failed to install dependencies with ${defaultPM}, ${defaultPM !== 'npm' ? 'trying npm...' : 'please install manually'}`)
+    try {
+      pm = 'npm'
+      if (defaultPM !== 'npm') system('npm install')
+      else throw new Error('exit')
+    } catch (e) {
+      if (e.message !== 'exit') {
+        console.log(e)
+        console.log('Failed to install dependencies with npm, please install manually')
+      }
+      try { fs.rmSync(path.resolve(__dirname, 'node_modules'), { recursive: true, force: true }) }
+      catch {}
+      process.exit(1)
+    }
   }
   console.log(`Used package manager: ${pm}`)
   console.log("Installed all dependencies.")
@@ -462,13 +467,20 @@ async function checkUpdates() {
     system(isWindows ? 'cls' : 'clear')
     console.log(logo)
     console.log(symbol.info('Updating...'))
-    console.log(symbol.info('Downloading repo...'))
+    console.log(symbol.info('Removing junk files...'))
     try {
-      system(`cd .. && ${isWindows ? `rmdir ${process.cwd()} /S /Q` : `rm -rf ${process.cwd()}`} && git clone https://github.com/gamerboytr/IPhisher.git ${process.cwd()}`)
+      console.log('')
+      for (const file of fs.readdirSync(process.cwd())) {
+        console.log(chalk.bold.redBright`[-] Deleting ${file}`)
+        fs.rmSync(file, { recursive: true, force: true })
+      }
+      console.log('')
+      console.log(symbol.info('Cloning repo...'))
+      system(`cd ${process.cwd()} && git clone https://github.com/gamerboytr/IPhisher.git .`)
       console.log(symbol.info('Updated!'))
       console.log(symbol.info('Restarting...'))
-      system(`cd ${process.cwd()} && npm start`)
-      process.exit(0)
+      try { system(`cd ${process.cwd()} && npm start`) }
+      finally { process.exit(0) } // Just in case if npm start fails or user ctrl+c
     } catch (e) {
       console.log(symbol.error(e))
       console.log(symbol.error('Cannot update'))
