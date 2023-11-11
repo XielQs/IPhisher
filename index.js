@@ -19,7 +19,7 @@ const baseDownloadURL = 'https://raw.githubusercontent.com/gamerboytr/IPhisher/m
 
 if (!fs.existsSync(path.resolve(__dirname, 'package.json'))) { // Direct run
   console.log('Preparing for direct run...')
-  if (!(is_installed('wget') || !is_installed('curl'))) {
+  if (!(is_installed('wget') && is_installed('curl'))) {
     console.log('Please install wget or curl manually')
     process.exit(1)
   }
