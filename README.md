@@ -1,7 +1,7 @@
 <h1 align="center">IPhisher</h1>
 
 <p align="center">
-  <img src="https://img.shields.io/badge/Version-1.0.0-green?style=for-the-badge">
+  <img src="https://img.shields.io/badge/Version-1.1.0-green?style=for-the-badge">
   <img src="https://img.shields.io/github/stars/gamerboytr/IPhisher?style=for-the-badge&color=orange">
   <img src="https://img.shields.io/github/forks/gamerboytr/IPhisher?color=cyan&style=for-the-badge&color=purple">
   <img src="https://img.shields.io/github/issues/gamerboytr/IPhisher?color=red&style=for-the-badge">
