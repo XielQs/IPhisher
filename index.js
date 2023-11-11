@@ -9,9 +9,11 @@ function system(command) {
 const isWindows = process.platform === 'win32'
 const isMac = process.platform === 'darwin'
 const isLinux = process.platform === 'linux'
+const isTermux = (isLinux && fs.existsSync('/data/data/com.termux')) || process.env.TERMUX_VERSION || process.platform === 'android'
 
 const haveWget = spawnSync('wget', ['-V']).status === 0
 const haveCurl = spawnSync('curl', ['--version']).status === 0
+const haveSSH  = spawnSync('ssh', ['-V']).status === 0
 
 if (!(haveWget || haveCurl)) {
   console.log('Please install wget or curl')
@@ -26,7 +28,7 @@ if (!fs.existsSync(path.resolve(__dirname, 'package.json'))) { // Direct run
 }
 
 if (!fs.existsSync(path.resolve(__dirname, 'node_modules'))) {
-  system('clear')
+  system(isWindows ? 'cls' : 'clear')
   console.log('Installing dependencies...');
   let pm = 'npm'
   try {
@@ -37,9 +39,24 @@ if (!fs.existsSync(path.resolve(__dirname, 'node_modules'))) {
     execSync(`pnpm --version`, { stdio: 'ignore' })
     pm = 'pnpm'
   } catch {}
-  system(`${pm} install`)
+  try { system(`${pm} install`) }
+  catch (e) {
+    console.log(e)
+    console.log(`Failed to install dependencies with ${pm}, please install manually`)
+    fs.unlinkSync(path.resolve(__dirname, 'node_modules'))
+    process.exit(1)
+  }
   console.log(`Used package manager: ${pm}`)
   console.log("Installed all dependencies.")
+}
+
+if (!haveSSH) {
+  if (isWindows) {
+    console.log('Please install OpenSSH manually')
+    process.exit(1)
+  }
+  console.log('Installing OpenSSH...')
+  system(`${isTermux ? 'pkg' : 'sudo apt'} install openssh${!isTermux ? '-client' : ''}`)
 }
 
 const cliProgress = require("cli-progress")
@@ -257,6 +274,10 @@ async function createCloudflaredTunnel(port) {
     tunnel.stderr.on('data', data => {
       msg += data.toString()
       const match = data.toString().match(/https:\/\/[0-9A-Za-z\-]+.trycloudflare.com/)
+      if (match === 'https://api.trycloudflare.com' && isTermux) {
+        console.log(symbol.error('Please turn on your hotspot to use cloudflared'))
+        resolve(false)
+      }
       if (match) resolve(match[0])
     })
     tunnel.on('exit', () => reject('Cannot create tunnel: ' + msg.slice(0, 1024) + (msg.length > 1024 ? '...' : '')))

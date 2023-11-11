@@ -22,13 +22,13 @@
 #### Install dependencies (git and nodejs)
 
 - For Debian
-  - ```sudo apt install git nodejs -y```
+  - ```sudo apt install git nodejs openssh-client -y```
 - For Arch
-  - ```sudo pacman -S git nodejs --noconfirm```
+  - ```sudo pacman -S git nodejs openssh --noconfirm```
 - For Fedora
-  - ```sudo yum install git nodejs -y```
+  - ```sudo yum install git nodejs openssh -y```
 - For Termux
-  - ```pkg install git nodejs -y```
+  - ```pkg install git nodejs openssh -y```
 
 <small>**Pro tip: install wget and ssh if not installed**</small>
 
@@ -56,6 +56,10 @@
 ```sh
 
 wget -qP IPhisher https://raw.githubusercontent.com/gamerboytr/IPhisher/master/index.js && (cd IPhisher && node .)
+
+# Or
+
+curl --create-dirs --output-dir IPhisher -O https://raw.githubusercontent.com/gamerboytr/IPhisher/master/index.js && (cd IPhisher && node .)
 
 ```
 
@@ -98,10 +102,12 @@ Options:
 OS         | Support Level
 -----------|--------------
 Linux      | Excellent
-Android    | Never tested
+Android    | Excellent
 MacOS      | Never tested
 WSL        | Excellent
 Windows    | Excellent
+
+<small>**Pro tip:** if you want to use cloudflared on termux, open your hotspot before running the tool</small>
 
 ### [•] Features
 
