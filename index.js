@@ -35,7 +35,7 @@ if (!fs.existsSync(path.resolve(__dirname, 'node_modules'))) {
   try { system(`${defaultPM} install`) }
   catch (e) {
     console.log(e)
-    console.log(`Failed to install dependencies with ${defaultPM}, ${defaultPM !== 'npm' ? 'trying npm...' : 'please install manually'}`)
+    console.log(`Failed to install dependencies with ${defaultPM}, ${defaultPM !== 'npm' ? 'trying with npm...' : 'please install manually'}`)
     try {
       pm = 'npm'
       if (defaultPM !== 'npm') system('npm install')
@@ -479,7 +479,7 @@ async function checkUpdates() {
       system(`cd ${process.cwd()} && git clone https://github.com/gamerboytr/IPhisher.git .`)
       console.log(symbol.info('Updated!'))
       console.log(symbol.info('Restarting...'))
-      try { system(`cd ${process.cwd()} && npm start`) }
+      try { system(`cd ${process.cwd()} && ${defaultPM} start`) }
       finally { process.exit(0) } // Just in case if npm start fails or user ctrl+c
     } catch (e) {
       console.log(symbol.error(e))
