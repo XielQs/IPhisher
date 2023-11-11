@@ -274,7 +274,7 @@ async function createCloudflaredTunnel(port) {
     tunnel.stderr.on('data', data => {
       msg += data.toString()
       const match = data.toString().match(/https:\/\/[0-9A-Za-z\-]+.trycloudflare.com/)
-      if (match === 'https://api.trycloudflare.com' && isTermux) {
+      if (match?.[0] === 'https://api.trycloudflare.com' && isTermux) {
         console.log(symbol.error('Please turn on your hotspot to use cloudflared'))
         resolve(false)
       }
