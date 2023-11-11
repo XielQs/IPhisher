@@ -20,7 +20,7 @@
 
 ### [•] Installation
 
-#### Install dependencies (git and nodejs)
+#### Install dependencies (git, nodejs and openssh)
 
 - For Debian
   - ```sudo apt install git nodejs openssh-client -y```
@@ -31,9 +31,9 @@
 - For Termux
   - ```pkg install git nodejs openssh -y```
 
-<small>**Pro tip: install wget and ssh if not installed**</small>
+<small>**Pro tip: install wget if not installed**</small>
 
-<small>If you are a windows user, use this links: [git](https://git-scm.com/download/win), [nodejs](https://nodejs.org/en/download/)</small>
+<small>If you are a windows user, use this links: [git](https://git-scm.com/download/win), [nodejs](https://nodejs.org/en/download/) [openssh](https://learn.microsoft.com/en-us/windows-server/administration/openssh/openssh_install_firstuse)</small>
 
 ##### Clone this repository
 
@@ -126,7 +126,7 @@ Windows    | Excellent
 
 - `NodeJS (>=12)`
 - `SSH`
-- `Wget (optional, recommended)`
+- `Wget or cURL`
 
 <small>**Info:** If not found, all of the required packages will be installed on first run</small>
 
